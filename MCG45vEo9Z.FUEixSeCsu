@@ -1,0 +1,67 @@
+function __getAll__Parts__()
+	local allParts = {}
+	for _, object in ipairs(workspace:GetDescendants()) do
+		if object:IsA("BasePart") then
+			table.insert(allParts, object)
+		end
+	end
+	return allParts
+end
+
+function __list_folder(folder: Instance, filter: string)
+	local result = {}
+	for i, obj in pairs(folder:GetDescendants()) do
+		if filter then
+			if obj:IsA(filter) then
+				table.insert(result, {obj = obj, name = obj.name, location = obj:GetFullName(), type = obj.className})
+			end
+		else
+			table.insert(result, {obj = obj, name = obj.name, location = obj:GetFullName(), type = obj.className})
+		end
+	end
+	return result
+end
+
+function __list_all_in_folder(folder: Instance)
+	local content = __list_folder(folder)
+	local result = {}
+	for k, info in pairs(content) do
+		if info.className == "Folder" then
+			table.insert(result, __list_all_in_folder(info.obj))
+		else
+			table.insert(result, info)
+		end
+	end
+	return result
+end
+
+function __alter__user(name: string, propriet: string, new_value: any)
+	local models = __list_folder(game.Workspace, "Model")
+	for k, model in pairs(models) do
+		task.wait()
+		if model.name == name then
+			
+		end
+	end
+end
+
+function __set_opt_to_obj_in_folder(folder: Instance, filter: string, opt: string, new: any)
+	local content = __list_folder(folder, filter)
+	for k, part in content do
+		task.wait()
+		part.obj[opt] = new
+	end
+end
+
+function __new_instance_in_all_on_folder(folder: Instance, filter: string, newType: string, opts)
+	opts = opts or {}
+	local content = __list_folder(folder, filter)
+	for key, inst in pairs(content) do
+		task.wait()
+		local obj = Instance.new(newType)
+		obj.Parent = inst.obj
+		for k, v in pairs(opts) do
+			obj[k] = v
+		end
+	end
+end
